@@ -42,19 +42,19 @@ body {
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
-#monthNavigator{
+#monthNavigator {
   gap: 20px;
   align-items: center;
   display: flex;
-  justify-content:center;
+  justify-content: center;
 }
 
-.navigatorButton{
+.navigatorButton {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background-color: #a0a0a0; 
+  background-color: #a0a0a0;
   color: white;
   border: none;
   border-radius: 6px;
@@ -63,8 +63,6 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.navigatorButton:hover{
+.navigatorButton:hover {
   background-color: #777777;
 }
-
-

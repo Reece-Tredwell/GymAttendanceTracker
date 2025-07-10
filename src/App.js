@@ -58,11 +58,13 @@ function App() {
     placeholders.push(<div key={"empty-" + i} className="empty-day"></div>);
   }
 
-  
+
   function renderDays(numberOfDays) {
     const items = [];
     for (let i = 1; i <= numberOfDays; i++) {
-      items.push(<Day key={i} date={`${i}`} />);
+      items.push(
+        <Day key={i} date={`${i}`} />
+      );
     }
     return items;
   }
