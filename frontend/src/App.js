@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import Day from './Day';
+
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -35,18 +36,6 @@ const months = {
 };
 
 let allowedMonths = ["January", "February", "March", "April", "May", "June", "July"];
-
-
-fetch('http://localhost:8181/setDateAttended', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ name: 'Reece', age: 25 })
-})
-  .then(res => res.text())
-  .then(data => console.log(data));
-
 
 
 function App() {

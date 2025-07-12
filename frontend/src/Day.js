@@ -11,8 +11,18 @@ class Day extends Component {
   }
 
   handleButtonClick = () => {
-    console.log("AddingSticker");
+
+    const date = new Date();
     this.setState({ showSticker: true });
+    fetch('http://localhost:8181/setDateAttended', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ Year: date.getFullYear, Month: date.getMonth, Day:date.getDate })
+    })
+      .then(res => res.text())
+      .then(data => console.log(data));
   }
 
 
