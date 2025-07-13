@@ -1,4 +1,5 @@
 const { Client } = require('pg');
+const passwordHash = require('password-hash');
 const fs = require('fs');
 const rawdata = fs.readFileSync('./config.json', 'utf8');
 const jsonData = JSON.parse(rawdata);
@@ -28,7 +29,7 @@ exports.register = async (req, res) => {
     if (submittedAPIKey != apiKeys["auth"]) {
         res.send("Invalid API Key")
         return
-    }
+    }    
     client = ConnectToDB(DBLoginInfo)
     const email = req.body.email
     const password_hash = req.body.password_hash
