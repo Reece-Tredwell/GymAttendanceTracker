@@ -1,0 +1,31 @@
+main {
+    border-width: 1px;
+    border-style: solid;
+    background-color: rgb(211, 208, 208);
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+main:hover {
+    background-color: rgb(175, 173, 173);
+}
+
+
+#dateText {
+    padding: 4%;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#button {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+}
+
+#button img {
+  width: 20%;
+  height: 50%;
+}
