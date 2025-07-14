@@ -1,5 +1,4 @@
 const { Client } = require('pg');
-const passwordHash = require('password-hash');
 const fs = require('fs');
 const rawdata = fs.readFileSync('./config.json', 'utf8');
 const jsonData = JSON.parse(rawdata);

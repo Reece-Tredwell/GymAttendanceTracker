@@ -11,7 +11,6 @@ class Day extends Component {
   }
 
   handleButtonClick = () => {
-
     const date = new Date();
     this.setState({ showSticker: true });
     fetch('http://localhost:8181/setDateAttended', {
