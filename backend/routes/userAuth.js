@@ -8,4 +8,6 @@ router.post('/registerHiddenLogic', userAuthController.registerHiddenLogic);
 
 router.post('/login', userAuthController.login);
 
+router.post('/loginHiddenLogic', userAuthController.loginHiddenLogic);
+
 module.exports = router;

@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
             },
             body: JSON.stringify({ email: req.body.email, password_hash: passwordHash.generate(req.body.password_hash) })
         });
-        const data = await apiRes.json();
+        const data = await apiRes.text();
         res.send(data);
     } catch(error){
         console.log(`error: ${error}}`)
@@ -63,7 +63,30 @@ exports.registerHiddenLogic = async (req, res) => {
     }
 };
 
-exports.login = (req, res) => {
-    res.send('logging ');
+
+
+exports.login = async(req, res) => {
+        try {
+        const apiRes = await fetch("http://localhost:8181/auth/loginHiddenLogic", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': apiKeys["auth"]
+            },
+            body: JSON.stringify({ email: req.body.email, password_hash: req.body.password_hash})
+        });
+        const data = await apiRes.text();
+        res.send(data);
+    } catch(error){
+        console.log(`error: ${error}}`)
+        res.send("POST to DB Failed - step 1/2")
+    }
+};
+
+
+
+exports.loginHiddenLogic = (req, res) => {
+    //Need to Query the DB, for the field that email == req.body.email
+    //Then Compare the req.body.password_hash == returned hashed PW from the DB
 
 };
