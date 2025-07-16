@@ -23,34 +23,44 @@ function ConnectToDB(DBLoginInfo) {
     return client
 }
 
-
 exports.register = async (req, res) => {
-    fetch("http://localhost:8181/auth/registerHiddenLogic", { //NGROK forwards the request to the local IP, this process allows for HTTPS (secured body)
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'api-key': apiKeys["auth"]
-        },
-        body: JSON.stringify({ email: req.body.email, password_hash: passwordHash.generate(req.body.password_hash) })
-    })
-    res.send('Connected To DB');
+    try {
+        const apiRes = await fetch("http://localhost:8181/auth/registerHiddenLogic", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': apiKeys["auth"]
+            },
+            body: JSON.stringify({ email: req.body.email, password_hash: passwordHash.generate(req.body.password_hash) })
+        });
+        const data = await apiRes.json();
+        res.send(data);
+    } catch(error){
+        console.log(`error: ${error}}`)
+        res.send("POST to DB Failed - step 1/2")
+    }
 };
 
 
 exports.registerHiddenLogic = async (req, res) => {
-    console.log("here")
-    const submittedAPIKey = req.header("api-key")
-    if (submittedAPIKey != apiKeys["auth"]) {
-        res.send("Invalid API Key")
-        return
+    try {
+        console.log("here")
+        const submittedAPIKey = req.header("api-key")
+        if (submittedAPIKey != apiKeys["auth"]) {
+            res.send("Invalid API Key")
+            return
+        }
+        client = ConnectToDB(DBLoginInfo)
+        const email = req.body.email
+        const password_hash = req.body.password_hash
+        const queryInsert = `INSERT INTO production.users (email, password_hash) VALUES ($1, $2)`;
+        await client.query(queryInsert, [email, password_hash]);
+        await client.end();
+        res.send('Inserted Into DB');
+    } catch (error) {
+        console.log(`error: ${error}}`)
+        res.send("POST to DB Failed - step 2/2")
     }
-    client = ConnectToDB(DBLoginInfo)
-    const email = req.body.email
-    const password_hash = req.body.password_hash
-    const queryInsert = `INSERT INTO production.users (email, password_hash) VALUES ($1, $2)`;
-    await client.query(queryInsert, [email, password_hash]);
-    await client.end();
-    res.send('Inserted Into DB');
 };
 
 exports.login = (req, res) => {
