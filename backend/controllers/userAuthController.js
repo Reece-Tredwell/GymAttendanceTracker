@@ -1,10 +1,12 @@
 const { Client } = require('pg');
 const passwordHash = require('password-hash');
 const fs = require('fs');
+const crypto = require('crypto');
 const rawdata = fs.readFileSync('./config.json', 'utf8');
 const jsonData = JSON.parse(rawdata);
 const DBLoginInfo = jsonData["DBLogin"]
 const apiKeys = jsonData["api-keys"]
+
 
 function ConnectToDB(DBLoginInfo) {
     const client = new Client({
@@ -35,8 +37,9 @@ exports.register = async (req, res) => {
         });
         const data = await apiRes.text();
         res.send(data);
-    } catch(error){
-        console.log(`error: ${error}}`)
+    } catch (error) {
+        console.log(req.body.password_hash)
+        console.log(`${error}}`)
         res.send("POST to DB Failed - step 1/2")
     }
 };
@@ -44,7 +47,6 @@ exports.register = async (req, res) => {
 
 exports.registerHiddenLogic = async (req, res) => {
     try {
-        console.log("here")
         const submittedAPIKey = req.header("api-key")
         if (submittedAPIKey != apiKeys["auth"]) {
             res.send("Invalid API Key")
@@ -65,28 +67,57 @@ exports.registerHiddenLogic = async (req, res) => {
 
 
 
-exports.login = async(req, res) => {
-        try {
+exports.login = async (req, res) => {
+    try {
         const apiRes = await fetch("http://localhost:8181/auth/loginHiddenLogic", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'api-key': apiKeys["auth"]
             },
-            body: JSON.stringify({ email: req.body.email, password_hash: req.body.password_hash})
+            body: JSON.stringify({ email: req.body.email, password_hash: req.body.password_hash })
         });
         const data = await apiRes.text();
         res.send(data);
-    } catch(error){
+    } catch (error) {
         console.log(`error: ${error}}`)
-        res.send("POST to DB Failed - step 1/2")
+        res.send("Fetch from DB Failed - step 1/2")
     }
 };
 
 
 
-exports.loginHiddenLogic = (req, res) => {
+exports.loginHiddenLogic = async (req, res) => {
     //Need to Query the DB, for the field that email == req.body.email
     //Then Compare the req.body.password_hash == returned hashed PW from the DB
+    try {
+        const submittedAPIKey = req.header("api-key")
+        if (submittedAPIKey != apiKeys["auth"]) {
+            res.send("Invalid API Key")
+            return
+        }
+        client = ConnectToDB(DBLoginInfo)
+        const email = req.body.email
+        const password_hash = req.body.password_hash
+        // Fetch user by email
+        const querySelect = `SELECT * FROM production.users WHERE email = $1`;
+        const result = await client.query(querySelect, [email]);
+        await client.end();
 
+        if (result.rows.length === 0) {
+            res.send("User not found");
+            return;
+        }
+
+        const user = result.rows[0];
+        // Compare password hash
+        if (passwordHash.verify(password_hash, user.password_hash)) {
+            res.send("Login successful");
+        } else {
+            res.send("Invalid password");
+        }
+    } catch (error) {
+        console.log(`error: ${error}`);
+        res.send("Fetch from DB Failed - step 2/2");
+    }
 };

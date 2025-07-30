@@ -35,7 +35,7 @@ const months = {
   December: 31
 };
 
-let allowedMonths = ["January", "February", "March", "April", "May", "June", "July"];
+let allowedMonths = ["January", "February", "March", "April", "May", "June", "July", "August"];
 
 
 function App() {

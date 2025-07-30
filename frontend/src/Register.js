@@ -27,12 +27,12 @@ class Register extends Component {
   };
 
   Register = () => {
-    fetch('https://localhost:8181/auth/register', {
+    fetch('http://localhost:8181/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({email: this.EmailValue, password_hash: this.PasswordValue})
+      body: JSON.stringify({email: this.state.EmailValue, password_hash: this.state.PasswordValue})
     })
       .then(res => res.text())
       .then(data => console.log(data));
