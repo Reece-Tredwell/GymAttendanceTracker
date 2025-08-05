@@ -10,4 +10,8 @@ router.post('/login', userAuthController.login);
 
 router.post('/loginHiddenLogic', userAuthController.loginHiddenLogic);
 
+router.post('/CreateSessionToken', userAuthController.CreateSessionToken);
+
+router.post('/CreateSessionTokenHiddenLogic', userAuthController.CreateSessionTokenHiddenLogic);
+
 module.exports = router;

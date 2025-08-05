@@ -88,8 +88,6 @@ exports.login = async (req, res) => {
 
 
 exports.loginHiddenLogic = async (req, res) => {
-    //Need to Query the DB, for the field that email == req.body.email
-    //Then Compare the req.body.password_hash == returned hashed PW from the DB
     try {
         const submittedAPIKey = req.header("api-key")
         if (submittedAPIKey != apiKeys["auth"]) {
@@ -108,10 +106,19 @@ exports.loginHiddenLogic = async (req, res) => {
             res.send("User not found");
             return;
         }
-
         const user = result.rows[0];
-        // Compare password hash
+
         if (passwordHash.verify(password_hash, user.password_hash)) {
+            //call the CreateSessionTokenEndpoint
+            const response = await fetch("http://localhost:8181/auth/CreateSessionToken", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': apiKeys["auth"]
+                },
+                body: JSON.stringify({userID: user.id})
+            })
+            console.log(response)
             res.send("Login successful");
         } else {
             res.send("Invalid password");
@@ -119,5 +126,46 @@ exports.loginHiddenLogic = async (req, res) => {
     } catch (error) {
         console.log(`error: ${error}`);
         res.send("Fetch from DB Failed - step 2/2");
+    }
+};
+
+
+
+exports.CreateSessionToken = async (req, res) => {
+    try {
+        const apiRes = await fetch("http://localhost:8181/auth/CreateSessionTokenHiddenLogic", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': apiKeys["auth"]
+            },
+            body: JSON.stringify({userid: req.body.userID})
+        });
+        const data = await apiRes.text();
+        res.send(data);
+    } catch (error) {
+        console.log(`error: ${error}}`)
+        res.send("Fetch from DB Failed - step 1/2")
+    }
+};
+
+
+exports.CreateSessionTokenHiddenLogic = async (req, res) => {
+    const { userid } = req.body;
+    try {
+        const submittedAPIKey = req.header("api-key")
+        if (submittedAPIKey != apiKeys["auth"]) {
+            res.send("Invalid API Key")
+            return
+        }
+
+        const Token = crypto.randomBytes(32).toString("hex");
+        client = ConnectToDB(DBLoginInfo)
+        const queryInsert = `INSERT INTO production.session_tokens (Token, userid) VALUES ($1, $2)`;
+        await client.query(queryInsert, [Token, req.body.userid]);
+        await client.end();
+        res.send({ token: Token });
+    } catch (error) {
+        console.log(`error: ${error}}`)
     }
 };
