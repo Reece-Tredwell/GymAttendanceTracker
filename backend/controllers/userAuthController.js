@@ -110,6 +110,7 @@ exports.loginHiddenLogic = async (req, res) => {
 
         if (passwordHash.verify(password_hash, user.password_hash)) {
             //call the CreateSessionTokenEndpoint
+            //need to implement the check for a current session Token
             const response = await fetch("http://localhost:8181/auth/CreateSessionToken", {
                 method: "POST",
                 headers: {
@@ -118,7 +119,6 @@ exports.loginHiddenLogic = async (req, res) => {
                 },
                 body: JSON.stringify({userID: user.id})
             })
-            console.log(response)
             res.send("Login successful");
         } else {
             res.send("Invalid password");
@@ -151,7 +151,6 @@ exports.CreateSessionToken = async (req, res) => {
 
 
 exports.CreateSessionTokenHiddenLogic = async (req, res) => {
-    const { userid } = req.body;
     try {
         const submittedAPIKey = req.header("api-key")
         if (submittedAPIKey != apiKeys["auth"]) {
@@ -164,6 +163,48 @@ exports.CreateSessionTokenHiddenLogic = async (req, res) => {
         const queryInsert = `INSERT INTO production.session_tokens (Token, userid) VALUES ($1, $2)`;
         await client.query(queryInsert, [Token, req.body.userid]);
         await client.end();
+        res.send({ token: Token });
+    } catch (error) {
+        console.log(`error: ${error}}`)
+    }
+};
+
+
+
+
+exports.getSessionToken = async (req, res) => {
+    try {
+        const apiRes = await fetch("http://localhost:8181/auth/getSessionTokenHiddenLogic", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': apiKeys["auth"]
+            },
+            body: JSON.stringify({userid: req.body.userID})
+        });
+        const data = await apiRes.text();
+        res.send(data);
+    } catch (error) {
+        console.log(`error: ${error}}`)
+        res.send("Fetch from DB Failed - step 1/2")
+    }
+};
+
+
+exports.getSessionTokenHiddenLogic = async (req, res) => {
+    try {
+        const submittedAPIKey = req.header("api-key")
+        if (submittedAPIKey != apiKeys["auth"]) {
+            res.send("Invalid API Key")
+            return
+        }
+
+        client = ConnectToDB(DBLoginInfo)
+        const querySelect = `SELECT * FROM production.session_tokens WHERE userid = $1`;
+        const result = await client.query(querySelect, [req.body.userid]);
+        await client.end();
+        const Token = result.rows[0];
+        console.log(Token)
         res.send({ token: Token });
     } catch (error) {
         console.log(`error: ${error}}`)

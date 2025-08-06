@@ -39,7 +39,7 @@ class Login extends Component {
           password_hash: this.state.PasswordValue
         })
       });
-
+      console.log(response)
       const data = await response.text();
       console.log(data);
       if (data == "Login successful") {

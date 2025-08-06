@@ -14,4 +14,8 @@ router.post('/CreateSessionToken', userAuthController.CreateSessionToken);
 
 router.post('/CreateSessionTokenHiddenLogic', userAuthController.CreateSessionTokenHiddenLogic);
 
+router.post('/getSessionToken', userAuthController.getSessionToken);
+
+router.post('/getSessionTokenHiddenLogic', userAuthController.getSessionTokenHiddenLogic);
+
 module.exports = router;
