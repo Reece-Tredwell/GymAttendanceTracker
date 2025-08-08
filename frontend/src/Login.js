@@ -39,14 +39,13 @@ class Login extends Component {
           password_hash: this.state.PasswordValue
         })
       });
-      console.log(response)
-      const data = await response.text();
-      console.log(data);
-      if (data == "Login successful") {
+      const data = await response.json();
+      if ("token" in data) {
+        localStorage.setItem('sessionToken', data["token"])
         this.setState({ Authentication: true });
       }
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error(error);
     }
   }
 
