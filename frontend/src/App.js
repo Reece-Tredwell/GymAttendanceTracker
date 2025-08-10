@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import Day from './Day';
-
+import Login from './Login';
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -40,9 +40,15 @@ let allowedMonths = ["January", "February", "March", "April", "May", "June", "Ju
 
 function App() {
   const [monthIndex, setMonthIndex] = useState(allowedMonths.length - 1);
+  const [redirectToLogin, setRedirectToLogin] = useState(false);
 
   const currentMonth = allowedMonths[monthIndex];
   const MonthDays = months[currentMonth];
+
+  const handleLogout = () => {
+    localStorage.removeItem('sessionToken');
+    setRedirectToLogin(true);
+  };
 
   // Calculate first day index for the current month
   let nunmberOfDaysInpreviousMonths = 0;
@@ -61,11 +67,11 @@ function App() {
   }
 
 
-  function renderDays(numberOfDays) {
+  function renderDays(numberOfDays, month) {
     const items = [];
     for (let i = 1; i <= numberOfDays; i++) {
       items.push(
-        <Day key={i} date={`${i}`} />
+        <Day key={`${month}-${i}`} date={`${i}`} />
       );
     }
     return items;
@@ -83,16 +89,33 @@ function App() {
     }
   }
 
+  if (redirectToLogin) {
+    return <Login />;
+  }
+
   return (
     <>
       <header id="header">
-        <h1 id="title">Gym Attendance</h1>
+        <div className="header-content">
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+          <h1 id="title">Gym Attendance</h1>
+        </div>
         <div id="monthNavigator">
-          <button className="navigatorButton" onClick={decrementmonth}>
+          <button 
+            className="navigatorButton" 
+            onClick={decrementmonth}
+            disabled={monthIndex === 0}
+          >
             <FaAngleLeft />
           </button>
           <h2 id="monthTitle">{currentMonth}</h2>
-          <button className="navigatorButton" onClick={incrementMonth}>
+          <button 
+            className="navigatorButton" 
+            onClick={incrementMonth}
+            disabled={monthIndex === allowedMonths.length - 1}
+          >
             <FaAngleRight />
           </button>
         </div>
@@ -105,7 +128,7 @@ function App() {
           </div>
         ))}
         {placeholders}
-        {renderDays(MonthDays)}
+        {renderDays(MonthDays, currentMonth)}
       </div>
     </>
   );

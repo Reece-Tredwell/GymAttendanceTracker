@@ -10,24 +10,45 @@ class Login extends Component {
       Register: false,
       Authentication: false,
       EmailValue: '',
-      PasswordValue: ''
+      PasswordValue: '',
+      error: '',
+      loading: false
     };
   }
-
 
   navigateRegister = () => {
     this.setState({ Register: true });
   }
+
   handleEmailChange = (event) => {
-    this.setState({ EmailValue: event.target.value });
+    this.setState({ EmailValue: event.target.value, error: '' });
   };
 
   handlePasswordChange = (event) => {
-    this.setState({ PasswordValue: event.target.value });
+    this.setState({ PasswordValue: event.target.value, error: '' });
   };
 
+  validateForm = () => {
+    const { EmailValue, PasswordValue } = this.state;
+    
+    if (!EmailValue || !PasswordValue) {
+      this.setState({ error: 'All fields are required' });
+      return false;
+    }
+
+    // if (!EmailValue.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    //   this.setState({ error: 'Please enter a valid email address' });
+    //   return false;
+    // }
+
+    return true;
+  }
 
   Login = async () => {
+    if (!this.validateForm()) return;
+
+    this.setState({ loading: true, error: '' });
+
     try {
       const response = await fetch('http://localhost:8181/auth/login', {
         method: 'POST',
@@ -39,13 +60,19 @@ class Login extends Component {
           password_hash: this.state.PasswordValue
         })
       });
+      
       const data = await response.json();
+      
       if ("token" in data) {
         localStorage.setItem('sessionToken', data["token"])
         this.setState({ Authentication: true });
+      } else {
+        this.setState({ error: 'Invalid email or password' });
       }
     } catch (error) {
-      console.error(error);
+      this.setState({ error: 'Login failed. Please try again.' });
+    } finally {
+      this.setState({ loading: false });
     }
   }
 
@@ -59,18 +86,52 @@ class Login extends Component {
         {this.state.Register ? (
           <Register />
         ) : (
-          <>
-            <h1>Login</h1>
+          <div className="login-container">
             <div id="loginBox">
-              <label>email</label>
-              <input type="email" value={this.state.EmailValue} onChange={this.handleEmailChange} />
-              <label>password</label>
-              <input type="string" value={this.state.PasswordValue} onChange={this.handlePasswordChange} />
-              <button onClick={this.Login}>Login</button>
-              <button onClick={this.navigateRegister}>Register Account</button>
+              <h1>Welcome Back</h1>
+              {this.state.error && <div className="error-message">{this.state.error}</div>}
+              
+              <div className="form-group">
+                <label htmlFor="email">Email address</label>
+                <input
+                  id="email"
+                  type="email"
+                  value={this.state.EmailValue}
+                  onChange={this.handleEmailChange}
+                  placeholder="Enter your email"
+                  disabled={this.state.loading}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  value={this.state.PasswordValue}
+                  onChange={this.handlePasswordChange}
+                  placeholder="Enter your password"
+                  disabled={this.state.loading}
+                />
+              </div>
+
+              <button 
+                onClick={this.Login}
+                disabled={this.state.loading}
+                className={this.state.loading ? 'loading' : ''}
+              >
+                {this.state.loading ? 'Signing in...' : 'Sign In'}
+              </button>
+              
+              <button 
+                onClick={this.navigateRegister}
+                className="secondary-button"
+                disabled={this.state.loading}
+              >
+                New user? Create account
+              </button>
             </div>
-            {this.state.Authentication && <App />}
-          </>
+          </div>
         )}
       </>
     );
