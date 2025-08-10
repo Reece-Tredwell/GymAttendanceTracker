@@ -20,7 +20,15 @@ class Day extends Component {
   }
 
   handleButtonClick = () => {
-    this.setState({ isModalOpen: true });
+    if (this.state.workoutType !== null) {
+      // Decrement the count before removing the workout
+      if (this.props.onWorkoutUpdate) {
+        this.props.onWorkoutUpdate(this.state.workoutType, false);
+      }
+      this.setState({workoutType: null});
+    } else {
+      this.setState({ isModalOpen: true });
+    }
   }
 
   handleModalClose = () => {
@@ -31,16 +39,21 @@ class Day extends Component {
     const date = new Date();
     this.setState({ workoutType });
     
+    // Call the parent's update function
+    if (this.props.onWorkoutUpdate) {
+      this.props.onWorkoutUpdate(workoutType, true);
+    }
+
     fetch('http://localhost:8181/gym/setWorkout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         year: date.getFullYear(),
         month: date.getMonth(),
         day: date.getDate(),
-        workoutType 
+        workoutType
       })
     })
       .then(res => res.text())
@@ -50,7 +63,7 @@ class Day extends Component {
 
   render() {
     const { workoutType, isModalOpen } = this.state;
-    
+
     return (
       <>
         <button id="button" onClick={this.handleButtonClick} className={workoutType ? 'has-workout' : ''}>
@@ -61,7 +74,7 @@ class Day extends Component {
             </span>
           )}
         </button>
-        <WorkoutModal 
+        <WorkoutModal
           isOpen={isModalOpen}
           onClose={this.handleModalClose}
           onSave={this.handleWorkoutSave}
