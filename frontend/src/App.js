@@ -1,24 +1,10 @@
 import React, { useState } from 'react';
 import './App.css';
 import Day from './Day';
-
+import Login from './Login';
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const monthsArray = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"
-];
 
 const months = {
   January: 31,
@@ -35,14 +21,41 @@ const months = {
   December: 31
 };
 
-let allowedMonths = ["January", "February", "March", "April", "May", "June", "July"];
+let allowedMonths = ["January", "February", "March", "April", "May", "June", "July", "August"];
 
 
 function App() {
+  const [workoutCounts, setWorkoutCounts] = useState({
+    arms: 0,
+    chest: 0,
+    back: 0,
+    shoulders: 0,
+    legs: 0
+  });
+  
   const [monthIndex, setMonthIndex] = useState(allowedMonths.length - 1);
+  const [redirectToLogin, setRedirectToLogin] = useState(false);
+
+  const updateWorkoutCount = (workoutType, isIncrement = true) => {
+    setWorkoutCounts((previousCounts) => {
+      const currentCount = previousCounts[workoutType];
+      const changeAmount = isIncrement ? 1 : -1;
+      const newCount = Math.max(0, currentCount + changeAmount);
+      
+      return {
+        ...previousCounts,
+        [workoutType]: newCount
+      };
+    });
+  };
 
   const currentMonth = allowedMonths[monthIndex];
   const MonthDays = months[currentMonth];
+
+  const handleLogout = () => {
+    localStorage.removeItem('sessionToken');
+    setRedirectToLogin(true);
+  };
 
   // Calculate first day index for the current month
   let nunmberOfDaysInpreviousMonths = 0;
@@ -61,11 +74,15 @@ function App() {
   }
 
 
-  function renderDays(numberOfDays) {
+  function renderDays(numberOfDays, month) {
     const items = [];
     for (let i = 1; i <= numberOfDays; i++) {
       items.push(
-        <Day key={i} date={`${i}`} />
+        <Day 
+          key={`${month}-${i}`} 
+          date={`${i}`}
+          onWorkoutUpdate={updateWorkoutCount}
+        />
       );
     }
     return items;
@@ -83,31 +100,86 @@ function App() {
     }
   }
 
+  if (redirectToLogin) {
+    return <Login />;
+  }
+
   return (
-    <>
+    <div className="app-container">
       <header id="header">
-        <h1 id="title">Gym Attendance</h1>
+        <div className="header-content">
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+          <h1 id="title">Gym Attendance</h1>
+        </div>
         <div id="monthNavigator">
-          <button className="navigatorButton" onClick={decrementmonth}>
+          <button 
+            className="navigatorButton" 
+            onClick={decrementmonth}
+            disabled={monthIndex === 0}
+          >
             <FaAngleLeft />
           </button>
           <h2 id="monthTitle">{currentMonth}</h2>
-          <button className="navigatorButton" onClick={incrementMonth}>
+          <button 
+            className="navigatorButton" 
+            onClick={incrementMonth}
+            disabled={monthIndex === allowedMonths.length - 1}
+          >
             <FaAngleRight />
           </button>
         </div>
       </header>
 
-      <div id="calenderBackground">
-        {daysOfWeek.map((day, index) => (
-          <div key={index} className="headerCell">
-            {day}
+      <div className="main-content">
+        <aside className="sidebar">
+          <div className="stats-section">
+            <h3>Workout Stats</h3>
+            <div className="stat-item">
+              <span className="stat-label">This Month</span>
+              <span className="stat-value">
+                {Object.values(workoutCounts).reduce((a, b) => a + b, 0)} workouts
+              </span>
+            </div>
+            <div className="stat-breakdown">
+              <div className="workout-stat">
+                <span className="workout-icon">💪</span>
+                <span>Arms: {workoutCounts.arms}</span>
+              </div>
+              <div className="workout-stat">
+                <span className="workout-icon">🏋️</span>
+                <span>Chest: {workoutCounts.chest}</span>
+              </div>
+              <div className="workout-stat">
+                <span className="workout-icon">🔙</span>
+                <span>Back: {workoutCounts.back}</span>
+              </div>
+              <div className="workout-stat">
+                <span className="workout-icon">🏋️‍♂️</span>
+                <span>Shoulders: {workoutCounts.shoulders}</span>
+              </div>
+              <div className="workout-stat">
+                <span className="workout-icon">🦵</span>
+                <span>Legs: {workoutCounts.legs}</span>
+              </div>
+            </div>
           </div>
-        ))}
-        {placeholders}
-        {renderDays(MonthDays)}
+        </aside>
+
+        <main className="calendar-container">
+          <div id="calenderBackground">
+            {daysOfWeek.map((day, index) => (
+              <div key={index} className="headerCell">
+                {day}
+              </div>
+            ))}
+            {placeholders}
+            {renderDays(MonthDays, currentMonth)}
+          </div>
+        </main>
       </div>
-    </>
+    </div>
   );
 }
 

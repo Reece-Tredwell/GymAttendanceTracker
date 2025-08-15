@@ -1,31 +1,44 @@
-main {
-    border-width: 1px;
-    border-style: solid;
-    background-color: rgb(211, 208, 208);
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+#button {
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  font-family: 'Inter', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-main:hover {
-    background-color: rgb(175, 173, 173);
+#button:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+#button.has-workout {
+  background-color: #f0f9ff;
+  border-color: #93c5fd;
+}
 
 #dateText {
-    padding: 4%;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4a5568;
 }
 
-#button {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    text-align: left;
+.workout-icon {
+  font-size: 1.5rem;
+  margin-top: auto;
+  align-self: center;
 }
 
-#button img {
-  width: 20%;
-  height: 50%;
+.empty-day {
+  aspect-ratio: 1;
+  background-color: transparent;
 }

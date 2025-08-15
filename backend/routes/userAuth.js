@@ -6,4 +6,9 @@ router.post('/register', userAuthController.register);
 
 router.post('/login', userAuthController.login);
 
+router.post('/createSessionToken', userAuthController.createSessionToken);
+
+router.post('/getSessionToken', userAuthController.getSessionToken);
+
+
 module.exports = router;

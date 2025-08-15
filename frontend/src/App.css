@@ -2,67 +2,221 @@ html,
 body {
   height: 100%;
   margin: 0;
+  background: linear-gradient(135deg, #f6f7fc 0%, #eef1f9 100%);
+  font-family: 'Inter', Arial, sans-serif;
 }
 
-
-#calenderBackground {
-  padding: 10px;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  width: 80%;
-  height: 80%;
-  background-color: rgb(52, 56, 56);
-  text-align: center;
-  margin: auto;
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.headerCell {
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  height: 50%;
-  font-size: 1.4rem;
-  font-weight: bold;
-  background-color: lightgray;
-  border: 1px solid #888;
-  border-radius: 5px;
-  padding: 5px;
+#header {
+  padding: 2rem 0;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+.main-content {
+  display: flex;
+  flex: 1;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1800px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
 
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  height: fit-content;
+}
+
+.calendar-container {
+  flex: 1;
+  min-width: 0; /* Prevents flex item from overflowing */
+}
+
+.stats-section h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.25rem;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+
+.stat-label {
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.stat-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.workout-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.workout-icon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+
+  .stat-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+}
+
+.header-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 90%;
+  margin: 0 auto 1.5rem auto;
+  padding: 0 20px;
+}
 
 #title {
-  font-size: 3rem;
-  text-align: center;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: 2.5rem;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
+.logout-button {
+  padding: 8px 16px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: auto;
+  width: 10%;
+  height: 10%;
+}
 
-#monthTitle {
-  text-align: center;
-  font-size: 2rem;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+.logout-button:hover {
+  background-color: #dc2626;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
 
 #monthNavigator {
-  gap: 20px;
+  gap: 24px;
   align-items: center;
   display: flex;
   justify-content: center;
 }
 
+#monthTitle {
+  text-align: center;
+  font-size: 1.5rem;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  color: #4a5568;
+  min-width: 120px;
+}
+
 .navigatorButton {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background-color: #a0a0a0;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: #6366f1;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.2s ease;
+  font-size: 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
 }
 
 .navigatorButton:hover {
-  background-color: #777777;
+  background-color: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+}
+
+.navigatorButton:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+#calenderBackground {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  width: 90%;
+  max-width: 1200px;
+  background-color: white;
+  text-align: center;
+  margin: 0 auto 2rem auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.headerCell {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4a5568;
+  background-color: #f7f8fa;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
