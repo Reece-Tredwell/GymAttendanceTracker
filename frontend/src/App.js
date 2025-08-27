@@ -80,7 +80,8 @@ function App() {
       items.push(
         <Day 
           key={`${month}-${i}`} 
-          date={`${i}`}
+          month={`${month}`}
+          date={i}
           onWorkoutUpdate={updateWorkoutCount}
         />
       );

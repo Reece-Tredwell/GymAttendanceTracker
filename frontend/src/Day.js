@@ -14,10 +14,10 @@ class Day extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      month: this.key,
-      date: this.date,
-      workoutType: null,
-      isModalOpen: false
+      month: props.month,
+      date: props.date,
+      isModalOpen: false,
+      workoutType: null
     };
   }
 
@@ -45,7 +45,7 @@ class Day extends Component {
     if (this.props.onWorkoutUpdate) {
       this.props.onWorkoutUpdate(workoutType, true);
     }
-
+    console.log(this.state.month)
     fetch('http://localhost:8181/gym/setWorkout', {
       method: 'POST',
       headers: {
@@ -56,12 +56,13 @@ class Day extends Component {
         year: date.getFullYear(),
         month: this.state.month,
         day: this.state.date,
-        workoutType
+        workoutType: workoutType
       })
     })
       .then(res => res.text())
       .then(data => console.log(data))
       .catch(error => console.error('Error saving workout:', error));
+
   }
 
   render() {

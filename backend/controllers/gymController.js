@@ -23,8 +23,7 @@ exports.setWorkout = async(req, res) => {
   const sessionToken = req.body.sessionToken
   const year = req.body.year
   var month = req.body.month.toLowerCase()
-  console.log(month)
-  const day = req.body.date
+  const day = req.body.day
   const months = {
     "january": 1,
     "february": 2,
@@ -40,7 +39,7 @@ exports.setWorkout = async(req, res) => {
     "december": 12
   };
   var month = months[month]
-  const type = req.body.type
+  const type = req.body.workoutType
   const queryInsert = `SELECT * FROM production.session_tokens WHERE "token" = $1`;
   const data = await client.query(queryInsert, [sessionToken]);
   const userid = data.rows[0]["userid"]
