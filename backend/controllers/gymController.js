@@ -18,19 +18,63 @@ function ConnectToDB(DBLoginInfo) {
     return client
 }
 
-exports.addDate = async(req, res) => {
+exports.setWorkout = async(req, res) => {
   client = ConnectToDB(DBLoginInfo)
   const sessionToken = req.body.sessionToken
+  const year = req.body.year
+  var month = req.body.month.toLowerCase()
+  console.log(month)
+  const day = req.body.date
+  const months = {
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12
+  };
+  var month = months[month]
+  const type = req.body.type
   const queryInsert = `SELECT * FROM production.session_tokens WHERE "token" = $1`;
   const data = await client.query(queryInsert, [sessionToken]);
-  console.log(data.rows[0]["userid"])
+  const userid = data.rows[0]["userid"]
+
+
+  const date = `${year}/${month}/${day}`
+  console.log(date)
+  const datesInsert = `INSERT INTO production.workouts (user_id, workout_date, workout_type) VALUES ($1, $2, $3)`;
+  const dateDataInsert = await client.query(datesInsert, [userid, date, type]);
+  res.send('Returning attendance dates');
+
 };
+
+
 
 exports.removeDate = (req, res) => {
   const id = req.params.id;
   res.send(`Date with id ${id} removed`);
 };
 
-exports.getDates = (req, res) => {
-  res.send('Returning attendance dates');
+
+
+exports.getDates = async(req, res) => {
+
+  client = ConnectToDB(DBLoginInfo)
+  const sessionToken = req.body.sessionToken
+
+  const tokenQuerySelect = `SELECT * FROM production.session_tokens WHERE "token" = $1`;
+  const tokenData = await client.query(tokenQuerySelect, [sessionToken]);
+  const userid = tokenData.rows[0]["userid"]
+  console.log(userid)
+   
+  const datesQuerySelect = `SELECT * FROM production.workouts WHERE "user_id" = $1`;
+  const dateData = await client.query(datesQuerySelect, [userid]);
+  console.log(dateData.rows)
+  res.send(dateData.rows);
 };

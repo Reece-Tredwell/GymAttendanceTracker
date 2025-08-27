@@ -14,6 +14,8 @@ class Day extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      month: this.key,
+      date: this.date,
       workoutType: null,
       isModalOpen: false
     };
@@ -50,9 +52,10 @@ class Day extends Component {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        sessionToken: localStorage.getItem('sessionToken'),
         year: date.getFullYear(),
-        month: date.getMonth(),
-        day: date.getDate(),
+        month: this.state.month,
+        day: this.state.date,
         workoutType
       })
     })

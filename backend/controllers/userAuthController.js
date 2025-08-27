@@ -70,7 +70,7 @@ exports.login = async (req, res) => {
             })
             const getData = await getResponse.json();
             console.log(getData)
-            if (Object.keys(getData).length === 0) { //call the CreateSessionTokenEndpoint
+            if (Object.keys(getData).length === 0) { //call the CreateSessionTokenEndpoint~
                 const createResponse = await fetch("http://localhost:8181/auth/createSessionToken", {
                     method: "POST",
                     headers: {
