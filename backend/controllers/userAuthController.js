@@ -2,6 +2,7 @@ const { Client } = require('pg');
 const passwordHash = require('password-hash');
 const fs = require('fs');
 const crypto = require('crypto');
+const CryptoJS = require("crypto-js");
 const { response } = require('express');
 const rawdata = fs.readFileSync('./config.json', 'utf8');
 const jsonData = JSON.parse(rawdata);
@@ -94,11 +95,13 @@ exports.login = async (req, res) => {
 exports.createSessionToken = async (req, res) => {
     try {
         const Token = crypto.randomBytes(32).toString("hex");
+        const secretKey = jsonData["encryptionKey"]["auth"]
+        const encryptedToken = CryptoJS.AES.encrypt(Token, secretKey).toString();
         client = ConnectToDB(DBLoginInfo)
         const queryInsert = `INSERT INTO production.session_tokens (Token, userid) VALUES ($1, $2)`;
-        await client.query(queryInsert, [Token, req.body.userid]);
+        await client.query(queryInsert, [encryptedToken, req.body.userid]);
         await client.end();
-        res.send({ token: Token });
+        res.send({ token: encryptedToken });
     } catch (error) {
         console.log(`error: ${error}}`)
     }
@@ -111,8 +114,8 @@ exports.getSessionToken = async (req, res) => {
         const querySelect = `SELECT * FROM production.session_tokens WHERE userid = $1`;
         const result = await client.query(querySelect, [req.body.userid]);
         await client.end();
-        const Token = result.rows[0];
-        res.send({ token: Token });
+        const encryptedToken = result.rows[0];
+        res.send({ token: encryptedToken });
     } catch (error) {
         console.log(`error: ${error}}`)
     }
